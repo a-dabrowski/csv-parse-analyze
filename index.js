@@ -33,12 +33,15 @@ class csvAnalyzer {
                 container[container.indexOf(fromData[i][0]) + 1]++;
             }
         }
+        const side = document.getElementById('insider');
+        side.innerHTML += container.toString();
         return container;
     }
 
-    initiateParse(file = this.preParsed) {
+    initiateParse() {
         this.reader = new FileReader();
-        this.reader.readAsText(file);
+        console.log(this);
+        this.reader.readAsText(this.preParsed);
         this.reader.onload = this.loadHandler.bind(this);
         this.reader.onerror = this.errorHandler;
     }
@@ -60,5 +63,4 @@ upload.addEventListener('click', function (e) {
     e.preventDefault();
     let analyzer = new csvAnalyzer(document.getElementById('file').files[0]);
     analyzer.initiateParse();
-    // getAsText(x); //change that to new class call //asynchronous problem?
 });
