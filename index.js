@@ -3,6 +3,7 @@ class csvAnalyzer {
     constructor(csvFile) {
         'use strict';
         this.preParsed = csvFile;
+        //return an Object output so we can use it in render
     }
     interpretData() {
         this.partnerships = this.parsedFile.data.filter(function (e) {
@@ -33,8 +34,8 @@ class csvAnalyzer {
                 container[container.indexOf(fromData[i][0]) + 1]++;
             }
         }
-        const side = document.getElementById('insider');
-        side.innerHTML += container.toString();
+        const output = document.getElementById('output');
+        output.innerHTML += container.toString().replace(/,/g, "<br>");
         return container;
     }
 
@@ -50,11 +51,8 @@ class csvAnalyzer {
     }
     loadHandler(event) {
         this.parsedFile = Papa.parse(event.target.result); //wrong binding it binds to file reader when it should bind with - now solved
-        debugger;
         this.interpretData(); //possible bind problem - now solved
     }
-
-
 }
 
 const upload = document.getElementById('analyze');
