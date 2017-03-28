@@ -17,14 +17,14 @@ class csvAnalyzer {
         });
         let output = document.getElementById("output");
         const countPublishers = this.countOcurrence(this.publishers);
-      //  console.log(countPublishers);
+        //  console.log(countPublishers);
         const countSearch = this.countOcurrence(this.dartGoogle);
         const countPartnerships = this.countOcurrence(this.partnerships);
         output.innerHTML += "<tr><th>Wydawcy</th></tr>" + countPublishers;
         output.innerHTML += "<tr><th>Partnerstwa</th></tr>" + countPartnerships;
         output.innerHTML += "<tr><th>Google</th></tr>" + countSearch;
-      //  console.log(countSearch);
-    //    console.log(countPartnerships);
+        //  console.log(countSearch);
+        //    console.log(countPartnerships);
         //now it's time to render
     }
 
@@ -37,17 +37,23 @@ class csvAnalyzer {
                 container[container.indexOf(fromData[i][0]) + 1]++;
             }
         }
-       let render = container.map(function(curr, index){
-           if(index % 2 === 0) {
-            return "<tr><td>"+curr+"</td>";
-           }else { return "<td>"+curr+"</td></tr>"
+        let render = container.map(function (current, index) {
+            if (index % 2 === 0) {
+                return "<tr><td>" + current + "</td>";
+            } else {
+                return "<td>" + current + "</td></tr>";
 
-           }
-       });
-        
-       // output.innerHTML += container.toString().replace(/,/g, "<br>");
-       console.log(render);
+            }
+        });
+
+        // output.innerHTML += container.toString().replace(/,/g, "<br>");
+        console.log(render);
         return render;
+    }
+
+    longShortCheck (short, long, productType){
+        // logic for krotki dlugi wniosek
+        
     }
 
     initiateParse() {
@@ -61,8 +67,8 @@ class csvAnalyzer {
         return event.toString();
     }
     loadHandler(event) {
-        this.parsedFile = Papa.parse(event.target.result); //wrong binding it binds to file reader when it should bind with - now solved
-        this.interpretData(); //possible bind problem - now solved
+        this.parsedFile = Papa.parse(event.target.result); //Papa provided from other file
+        this.interpretData();
     }
 }
 
