@@ -13,19 +13,22 @@ class csvAnalyzer {
             return /DART/.test(e[3]);
         });
         this.publishers = this.parsedFile.data.filter(function (e) {
-            return !/DART/.test(e[3]) && !/PARTNERSTWA/.test(e[3]) && e[5];
+            return !/DART/.test(e[3]) && !/PARTNERSTWA/.test(e[3]) && /Getin/.test(e[0]) && e[5];
         });
-
+        let output = document.getElementById("output");
         const countPublishers = this.countOcurrence(this.publishers);
-        console.log(countPublishers);
+      //  console.log(countPublishers);
         const countSearch = this.countOcurrence(this.dartGoogle);
         const countPartnerships = this.countOcurrence(this.partnerships);
-        console.log(countSearch);
-        console.log(countPartnerships);
+        output.innerHTML += "<tr><th>Wydawcy</th></tr>" + countPublishers;
+        output.innerHTML += "<tr><th>Partnerstwa</th></tr>" + countPartnerships;
+        output.innerHTML += "<tr><th>Google</th></tr>" + countSearch;
+      //  console.log(countSearch);
+    //    console.log(countPartnerships);
         //now it's time to render
     }
 
-    countOcurrence(fromData, container = []) {
+    countOcurrence(fromData, container = []) { // go for render here
         for (let i = 0; i < fromData.length; i++) {
             if (container.indexOf(fromData[i][0]) == -1) {
                 container.push(fromData[i][0]);
@@ -34,9 +37,17 @@ class csvAnalyzer {
                 container[container.indexOf(fromData[i][0]) + 1]++;
             }
         }
-        const output = document.getElementById('output');
-        output.innerHTML += container.toString().replace(/,/g, "<br>");
-        return container;
+       let render = container.map(function(curr, index){
+           if(index % 2 === 0) {
+            return "<tr><td>"+curr+"</td>";
+           }else { return "<td>"+curr+"</td></tr>"
+
+           }
+       });
+        
+       // output.innerHTML += container.toString().replace(/,/g, "<br>");
+       console.log(render);
+        return render;
     }
 
     initiateParse() {
