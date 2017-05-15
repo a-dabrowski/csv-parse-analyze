@@ -8,9 +8,6 @@
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "papaparse": "^4.1.4"
-  },
   "dependencies": {
     "papaparse": "^4.1.4"
   }
