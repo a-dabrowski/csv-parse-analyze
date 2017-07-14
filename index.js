@@ -4,8 +4,13 @@ class csvAnalyzer {
         'use strict';
         this.preParsed = csvFile;
         //return an Object output so we can use it in render
+        //date collection
     }
-    interpretData() {
+
+    interpretData(oneDayCSV) { //full csv is loaded
+
+
+            //change this parsedFile to data from one day
         this.partnerships = this.parsedFile.data.filter(function (e) {
             return /PARTNERSTWA/.test(e[3]);
         });
@@ -20,29 +25,44 @@ class csvAnalyzer {
         //  console.log(countPublishers);
         const countSearch = this.countOcurrence(this.dartGoogle);
         const countPartnerships = this.countOcurrence(this.partnerships);
+        output.innerHTML += `Day: `;
         output.innerHTML += "<tr><th>Wydawcy</th></tr>" + countPublishers;
         output.innerHTML += "<tr><th>Partnerstwa</th></tr>" + countPartnerships;
         output.innerHTML += "<tr><th>Google</th></tr>" + countSearch;
+        
         //  console.log(countSearch);
         //    console.log(countPartnerships);
         //now it's time to render
+    }
+
+    filterDays(data) {
+        let dateCollection = [];
+
+        for (let i = 0; i < data.length; i++) {
+            if (dateCollection.indexOf(data[i][4]) == -1) {
+                dateCollection.push(data[i][4]);
+            }
+        }
+        console.log(dateCollection);
+        return dateCollection; //works good
     }
 
     countOcurrence(fromData, container = []) { // go for render here
         let long = fromData.filter(function (e) {
             return /Długi/.test(e[0]) && /- TYP/.test(e[0]);
         });
-       console.log(this.longShortCheck(fromData, long));
-       let checkedData = this.longShortCheck(fromData);
+        console.log(this.longShortCheck(fromData, long));
+        let checkedData = this.longShortCheck(fromData);
         //define regex for lead dlugi
         for (let i = 0; i < checkedData.length; i++) {
-         if (container.indexOf(checkedData[i][0]) == -1) {
+            if (container.indexOf(checkedData[i][0]) == -1) { //if product doesn't exist in arr, push its name and first ocurrence to it
                 container.push(checkedData[i][0]);
                 container.push(1);
             } else {
                 container[container.indexOf(checkedData[i][0]) + 1]++;
             }
         }
+        //counting ended 
         let render = container.map(function (current, index) {
             if (index % 2 === 0) {
                 return "<tr><td>" + current + "</td>";
@@ -57,23 +77,29 @@ class csvAnalyzer {
         return render;
     }
 
-    longShortCheck (all, long){//or maybe all of it and delete true shorts from it
+    longShortCheck(all, long) { //or maybe all of it and delete true shorts from it
+        //this function deletes short leads if a short lead led to long lead
         let checkedAll = all;
         console.log(long);
-        for (let i = all.length-1; i >= 0; i--) {
-            if(long != undefined || long != null){
-            if (long.find(function(e){if(!long){return undefined;} else return e[5] == all[i][5];}) && /Lead/.test(checkedAll[i])){
-                checkedAll.splice(i, 1);//to chyba znaczy ze moze omijac moze lepiej od tylu puscic
+        for (let i = all.length - 1; i >= 0; i--) {
+            if (long != undefined || long != null) {
+                if (long.find(function (e) {
+                        if (!long) {
+                            return undefined;
+                        } else return e[5] == all[i][5];
+                    }) &&
+                    /Lead/.test(checkedAll[i])) {
+                    checkedAll.splice(i, 1); //because how splice works, loop is working from the end towards the beginning
+                }
             }
         }
-        }
-       // console.log(checkedAll);
-         return checkedAll;        
+        // console.log(checkedAll);
+        return checkedAll;
     }
 
     initiateParse() {
         this.reader = new FileReader();
-      //  console.log(this);
+        //  console.log(this);
         this.reader.readAsText(this.preParsed);
         this.reader.onload = this.loadHandler.bind(this);
         this.reader.onerror = this.errorHandler;
