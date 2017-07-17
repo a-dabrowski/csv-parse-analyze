@@ -9,29 +9,34 @@ class csvAnalyzer {
 
     interpretData(oneDayCSV) { //full csv is loaded
 
+        let dates = this.filterDays(this.parsedFile.data);
+        console.log(dates);
+        //change this parsedFile to data from one day
+        for (let i = 0; i < dates.length; i++) {
+            // console.log(date, typeof date);
+            this.partnerships = this.parsedFile.data.filter(function (e) {
+                return /PARTNERSTWA/.test(e[3]) && dates[i].includes(e[4]);
+            });
+            this.dartGoogle = this.parsedFile.data.filter(function (e) {
+                return /DART/.test(e[3]) && dates[i].includes(e[4]);
+            });
+            this.publishers = this.parsedFile.data.filter(function (e) {
+                return !/DART/.test(e[3]) && !/PARTNERSTWA/.test(e[3]) && /(TYP|Lead|LP)/.test(e[0]) && e[5] && dates[i].includes(e[4]);
+            });
+            let output = document.getElementById("output");
+            const countPublishers = this.countOcurrence(this.publishers);
+            //  console.log(countPublishers);
+            const countSearch = this.countOcurrence(this.dartGoogle);
+            const countPartnerships = this.countOcurrence(this.partnerships);
+            output.innerHTML += `<h1>Day: ${dates[i]}</h1>
+            <tr><th>Wydawcy</th></tr> ${countPublishers}
+            <tr><th>Partnerstwa</th></tr> ${countPartnerships}
+            <tr><th>Google</th></tr> ${countSearch}`;
 
-            //change this parsedFile to data from one day
-        this.partnerships = this.parsedFile.data.filter(function (e) {
-            return /PARTNERSTWA/.test(e[3]);
-        });
-        this.dartGoogle = this.parsedFile.data.filter(function (e) {
-            return /DART/.test(e[3]);
-        });
-        this.publishers = this.parsedFile.data.filter(function (e) {
-            return !/DART/.test(e[3]) && !/PARTNERSTWA/.test(e[3]) && /(TYP|Lead|LP)/.test(e[0]) && e[5];
-        });
-        let output = document.getElementById("output");
-        const countPublishers = this.countOcurrence(this.publishers);
-        //  console.log(countPublishers);
-        const countSearch = this.countOcurrence(this.dartGoogle);
-        const countPartnerships = this.countOcurrence(this.partnerships);
-        output.innerHTML += `Day: `;
-        output.innerHTML += "<tr><th>Wydawcy</th></tr>" + countPublishers;
-        output.innerHTML += "<tr><th>Partnerstwa</th></tr>" + countPartnerships;
-        output.innerHTML += "<tr><th>Google</th></tr>" + countSearch;
-        
-        //  console.log(countSearch);
-        //    console.log(countPartnerships);
+        }
+
+        //console.log(countSearch);
+        //console.log(countPartnerships);
         //now it's time to render
     }
 
@@ -39,11 +44,21 @@ class csvAnalyzer {
         let dateCollection = [];
 
         for (let i = 0; i < data.length; i++) {
-            if (dateCollection.indexOf(data[i][4]) == -1) {
+            if (dateCollection.indexOf(data[i][4]) == -1 && /\d\d\d\d-\d\d-\d\d/.test(data[i][4])) { //regex works fine
                 dateCollection.push(data[i][4]);
             }
         }
-        console.log(dateCollection);
+
+        console.log(dateCollection, "before sort");
+
+        dateCollection.sort((a, b) => {
+
+           // a = Number(a.split('-').join(''));
+          //  b = Number(b.split('-').join(''));
+            console.log(a);
+            return new Date(a) - new Date(b);
+        }); // sort dates 
+        console.log(dateCollection, "after sort");
         return dateCollection; //works good
     }
 
@@ -51,7 +66,7 @@ class csvAnalyzer {
         let long = fromData.filter(function (e) {
             return /Długi/.test(e[0]) && /- TYP/.test(e[0]);
         });
-        console.log(this.longShortCheck(fromData, long));
+        //console.log(this.longShortCheck(fromData, long));
         let checkedData = this.longShortCheck(fromData);
         //define regex for lead dlugi
         for (let i = 0; i < checkedData.length; i++) {
@@ -73,14 +88,14 @@ class csvAnalyzer {
         });
 
         // output.innerHTML += container.toString().replace(/,/g, "<br>");
-        console.log(render);
+        //console.log(render);
         return render;
     }
 
     longShortCheck(all, long) { //or maybe all of it and delete true shorts from it
         //this function deletes short leads if a short lead led to long lead
         let checkedAll = all;
-        console.log(long);
+        //console.log(long);
         for (let i = all.length - 1; i >= 0; i--) {
             if (long != undefined || long != null) {
                 if (long.find(function (e) {
