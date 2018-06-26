@@ -17,6 +17,7 @@ class csvAnalyzer {
         const exportDcm = data.data.slice(startIndex, endIndex);
         exportDcm.forEach((el) => {
             el.unshift('DCM');
+            el[el.length - 1] = Number(el[el.length - 1]);//change conversions to number to get rid of decimal points in strings
             let row = el.join(',');
             csvExport += row + '\r\n';
 
